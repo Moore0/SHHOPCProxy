@@ -1,0 +1,11 @@
+.vs/
+bin/
+obj/
+Debug/
+x64/
+Release/
+x86/
+packages/
+dotNetFx40_Full_x86_x64.exe
+KepServer_setup.exe
+AccessDatabaseEngine.exe
