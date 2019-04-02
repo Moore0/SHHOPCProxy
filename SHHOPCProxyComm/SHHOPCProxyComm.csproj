@@ -68,7 +68,11 @@
   <ItemGroup>
     <Compile Include="API\Base\BaseAPI.cs" />
     <Compile Include="API\SHHOPCItemAPI.cs" />
+    <Compile Include="APIChecker\Base\BaseAPIChecker.cs" />
+    <Compile Include="APIChecker\SHHOPCItemAPIChecker.cs" />
+    <Compile Include="API\SHHOPCItemAPICollection.cs" />
     <Compile Include="Core\SHHOPCItem.cs" />
+    <Compile Include="Core\SHHOPCItemReader.cs" />
     <Compile Include="Model\SHHOPCRealValue.cs" />
     <Compile Include="Core\SHHOPCServer.cs" />
     <Compile Include="Core\SHHOPCServerPool.cs" />

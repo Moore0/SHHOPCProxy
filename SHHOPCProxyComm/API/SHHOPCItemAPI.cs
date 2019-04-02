@@ -26,6 +26,11 @@ namespace SHH.OPCProxy.Comm.API
         public IOPCProxyPro OPCProxyPro { set; get; }
 
         /// <summary>
+        /// 是否关闭
+        /// </summary>
+        public override bool IsClosed { get; set; }
+
+        /// <summary>
         /// 构造函数
         /// </summary>
         private SHHOPCItemAPI()

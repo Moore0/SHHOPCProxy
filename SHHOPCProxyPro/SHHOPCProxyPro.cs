@@ -60,6 +60,7 @@ namespace SHH.OPCProxy.Pro
         /// </summary>
         public static int Port
         {
+            //这里不做验证
             set => ConfigHelper.WriteConfig(nameof(Port), value);
             get
             {
@@ -79,8 +80,6 @@ namespace SHH.OPCProxy.Pro
         /// </summary>
         public TcpServerChannel Channel { set; get; }
 
-
-
         /// <summary>
         /// 输出日志事件(考虑额外封装一个消息对象)
         /// </summary>
@@ -91,6 +90,7 @@ namespace SHH.OPCProxy.Pro
         /// </summary>
         public SHHOPCProxyPro()
         {
+            //初始化组件
             InitializeComponent();
 
             try
@@ -115,9 +115,6 @@ namespace SHH.OPCProxy.Pro
                 SHHLog.WriteLog(e);
                 OnPrintMessage(string.Format("注册通道失败,端口:{0}", Port));
             }
-
-
-
 
 
             //获取SHHOPCItemAPI
@@ -211,7 +208,7 @@ namespace SHH.OPCProxy.Pro
                 return null;
 
             //获取值
-            v = SHHOPCItems[hashCode].GetValue(); 
+            v = SHHOPCItems[hashCode].GetValue();
             return v;
         }
 
@@ -227,9 +224,8 @@ namespace SHH.OPCProxy.Pro
                 return false;
 
             //返回结果
-            bool result = false;
+            bool result = SHHOPCItems[hashCode].SetValue(value);
 
-            result = SHHOPCItems[hashCode].SetValue(value); 
             return result;
         }
 
@@ -247,28 +243,28 @@ namespace SHH.OPCProxy.Pro
             bool result = false;
 
 
-                try
+            try
+            {
+                SHHOPCItem item = new SHHOPCItem() { APIModel = model };
+                if (SHHOPCItems.TryAdd(model.GetOPCItemHashCode(), item))
                 {
-                    SHHOPCItem item = new SHHOPCItem() { APIModel = model };
-                    if (SHHOPCItems.TryAdd(model.GetOPCItemHashCode(), item))
-                    {
-                        OPCServerPool.AttachItem(item);
-                        result = true;
-                    }
-                    else
-                    {
-                        result = false;
-                    }
+                    OPCServerPool.AttachItem(item);
+                    result = true;
                 }
-                catch (Exception e)
+                else
                 {
-#if DEBUG
-                    Debugger.Break();
-#endif
-
-                    SHHLog.WriteLog(e);
                     result = false;
                 }
+            }
+            catch (Exception e)
+            {
+#if DEBUG
+                Debugger.Break();
+#endif
+
+                SHHLog.WriteLog(e);
+                result = false;
+            }
 
             return result;
         }

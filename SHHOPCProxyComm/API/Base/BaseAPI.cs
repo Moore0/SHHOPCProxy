@@ -14,7 +14,7 @@ namespace SHH.OPCProxy.Comm.API
     /// <summary>
     /// 远程调用API基类
     /// </summary>
-    public class BaseAPI : MarshalByRefObject
+    public abstract class BaseAPI : MarshalByRefObject
     {
         /// <summary>
         /// 构造函数
@@ -30,5 +30,10 @@ namespace SHH.OPCProxy.Comm.API
         {
             return null;
         }
+
+        /// <summary>
+        /// 是否关闭
+        /// </summary>
+        public abstract bool IsClosed { set; get; }
     }
 }
