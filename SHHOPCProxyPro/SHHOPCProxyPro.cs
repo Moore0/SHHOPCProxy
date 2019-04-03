@@ -142,7 +142,9 @@ namespace SHH.OPCProxy.Pro
                             continue;
 
                         //监测服务运行状态
-                        if (server.CheckConnectState())
+                        //正常或手动断开
+                        if (server.CheckConnectState() 
+                            || server.IsManualDisconnected)
                         {
                             //什么也不做
                         }
@@ -191,6 +193,8 @@ namespace SHH.OPCProxy.Pro
         /// </summary>
         protected override void OnStop()
         {
+            //清理OPC连接
+            Disconnect();
             SHHLog.WriteLog("服务关闭");
         }
 
@@ -237,7 +241,7 @@ namespace SHH.OPCProxy.Pro
         {
             //如果已存在
             if (SHHOPCItems.ContainsKey(model.GetOPCItemHashCode()))
-                return false;
+                return true;
 
             bool result = false;
 
@@ -277,7 +281,7 @@ namespace SHH.OPCProxy.Pro
             if (!SHHOPCItems.ContainsKey(hashCode))
                 return;
 
-            SHHOPCItems.TryRemove(hashCode,out SHHOPCItem item);
+            SHHOPCItems.TryRemove(hashCode, out SHHOPCItem item);
         }
 
         /// <summary>
@@ -298,6 +302,20 @@ namespace SHH.OPCProxy.Pro
             if (!OPCServerPool.ContainsKey(hashCode))
                 return false;
             return OPCServerPool[hashCode].IsConn;
+        }
+
+        /// <summary>
+        /// 测试连接状态
+        /// </summary>
+        public void TestState()
+        { }
+
+        /// <summary>
+        /// 断开连接
+        /// </summary>
+        public void Disconnect()
+        {
+            OPCServerPool.DisconnectAll();
         }
     }
 }

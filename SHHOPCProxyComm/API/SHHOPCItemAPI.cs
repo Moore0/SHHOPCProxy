@@ -106,5 +106,13 @@ namespace SHH.OPCProxy.Comm.API
         {
             return OPCProxyPro.IsOPCServerAlive(serverHashCode);
         }
+
+        /// <summary>
+        /// 测试状态
+        /// </summary>
+        public void TestState()
+        {
+            OPCProxyPro.TestState();
+        }
     }
 }

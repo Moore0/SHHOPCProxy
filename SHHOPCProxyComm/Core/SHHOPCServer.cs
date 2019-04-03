@@ -63,6 +63,8 @@ namespace SHH.OPCProxy.Comm.Core
         public void Disconnect()
         {
             Server.OPCGroups.RemoveAll();
+            //手动断开置为true
+            IsManualDisconnected = true;
             Server.Disconnect();
         }
 
@@ -88,6 +90,11 @@ namespace SHH.OPCProxy.Comm.Core
             }
             return IsConn;
         }
+
+        /// <summary>
+        /// 手动断开标志
+        /// </summary>
+        public bool IsManualDisconnected { set; get; } = false;
 
         /// <summary>
         /// OPC服务

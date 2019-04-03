@@ -1,4 +1,5 @@
 ﻿using SHH.OPCProxy.Comm.API;
+using SHH.OPCProxy.Comm.Model;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,8 +24,6 @@ namespace SHH.OPCProxy.Comm.APIChecker
         /// </summary>
         private SHHOPCItemAPICollection Parent { set; get; }
 
-        //private string IP { set; get; }
-
         /// <summary>
         /// 是否正常
         /// </summary>
@@ -34,38 +33,42 @@ namespace SHH.OPCProxy.Comm.APIChecker
         /// 构造函数
         /// </summary>
         /// <param name="api"></param>
-        public SHHOPCItemAPIChecker(SHHOPCItemAPI api, string ip, SHHOPCItemAPICollection parent)
-            : base(api)
+        public SHHOPCItemAPIChecker(string ip, string port, SHHOPCItemAPICollection parent)
         {
             //获取API集合
             Parent = parent;
-
-
-
 
             Timer = new Timer(_ =>
             {
                 try
                 {
                     //测试是否API正常
-                    api.GetHashCode();
+                    parent[ip].TestState();
                     IsNormal = true;
                 }
                 catch
                 {
+                    //写的比较蠢,需要优化...
+
                     IsNormal = false;
 
-                    new Thread(async () =>
+                    Thread thread = new Thread(async () =>
                     {
                         await parent.UnRegisterRemoteObject(ip);
+                        await parent.RegisterRemoteObject(ip, port);
+                    });
 
-                        await parent.RegisterRemoteObject("127.0.0.1", "79", "tcp://127.0.0.1:79/SHHOPCItemAPI");
-                    }).Join();
-
+                    thread.Start();
+                    thread.Join();
                 }
 
-                //固定两秒
-                Timer.Change(2000, Timeout.Infinite);
+                try
+                {
+                    //固定两秒
+                    Timer.Change(2000, Timeout.Infinite);
+                }
+                catch
+                { }
             }, null, 0, Timeout.Infinite);
         }
     }

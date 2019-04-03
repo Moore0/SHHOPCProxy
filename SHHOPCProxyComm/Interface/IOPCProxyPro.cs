@@ -49,5 +49,11 @@ namespace SHH.OPCProxy.Comm.Interface
         /// </summary>
         /// <returns></returns>
         bool IsOPCServerAlive(int serverHashCode);
+
+
+        /// <summary>
+        /// 测试状态
+        /// </summary>
+        void TestState();
     }
 }

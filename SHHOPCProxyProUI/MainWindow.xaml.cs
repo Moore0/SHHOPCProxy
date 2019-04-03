@@ -30,19 +30,7 @@ namespace SHHOPCProxyProUI
         public MainWindow()
         {
             InitializeComponent();
-
-            //SHHOPCItemAPI.SHHOPCItemAPILogPrint += SHHOPCItemAPI_SHHOPCItemAPILogPrint;
         }
-
-        private async void SHHOPCItemAPI_SHHOPCItemAPILogPrint(string obj)
-        {
-            await Dispatcher.InvokeAsync(()=> {
-                tbx.Text += obj + "\n";
-            }, DispatcherPriority.SystemIdle);
-        }
-
-
-
 
         /// <summary>
         /// 关闭时调用
@@ -50,15 +38,15 @@ namespace SHHOPCProxyProUI
         /// <param name="e"></param>
         protected override void OnClosing(CancelEventArgs e)
         {
+            Proxy.Disconnect();
             base.OnClosing(e);
-
-            //关闭所有API
-            //SHHOPCProxyPro.CloseALLAPIs();
         }
 
         /// <summary>
         /// 代理服务对象
         /// </summary>
         public SHHOPCProxyPro Proxy { set; get; } = new SHHOPCProxyPro();
+
+
     }
 }

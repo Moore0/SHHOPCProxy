@@ -13,13 +13,13 @@ namespace SHH.OPCProxy.Comm.APIChecker
     /// </summary>
     public class BaseAPIChecker
     {
-        /// <summary>
-        /// 构造函数
-        /// </summary>
-        /// <param name="api"></param>
-        public BaseAPIChecker(BaseAPI api)
-        {
+        ///// <summary>
+        ///// 构造函数
+        ///// </summary>
+        ///// <param name="api"></param>
+        //public BaseAPIChecker(BaseAPI api)
+        //{
 
-        }
+        //}
     }
 }

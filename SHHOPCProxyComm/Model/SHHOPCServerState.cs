@@ -26,6 +26,10 @@ namespace SHH.OPCProxy.Comm.Model
         /// <summary>
         /// 未知
         /// </summary>
-        UnKnown = 3
+        UnKnown = 3,
+        /// <summary>
+        /// 通讯异常
+        /// </summary>
+        CommFail = 4,
     }
 }

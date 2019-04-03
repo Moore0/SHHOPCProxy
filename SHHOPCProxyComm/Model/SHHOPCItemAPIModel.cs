@@ -71,6 +71,20 @@ namespace SHH.OPCProxy.Comm.Model
             get => ip;
         }
 
+        private string port;
+        /// <summary>
+        /// 端口号
+        /// </summary>
+        public string Port
+        {
+            set
+            {
+                port = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Port)));
+            }
+            get => port;
+        }
+
         private string serverName;
         /// <summary>
         /// 服务名
@@ -86,7 +100,7 @@ namespace SHH.OPCProxy.Comm.Model
         }
 
 
-        private SHHOPCServerState state = SHHOPCServerState.Offline;
+        private SHHOPCServerState state = SHHOPCServerState.UnKnown;
         /// <summary>
         /// 状态
         /// </summary>

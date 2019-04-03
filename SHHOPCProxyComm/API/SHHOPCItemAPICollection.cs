@@ -34,15 +34,21 @@ namespace SHH.OPCProxy.Comm.API
         public ConcurrentDictionary<int, SHHOPCItemAPIModel> Models { set; get; } = new ConcurrentDictionary<int, SHHOPCItemAPIModel>();
 
         /// <summary>
+        /// 构造函数
+        /// </summary>
+        public SHHOPCItemAPICollection()
+        { }
+
+        /// <summary>
         /// 注册远程对象
         /// </summary>
         /// <param name="url"></param>
         /// <returns></returns>
-        public async Task<bool> RegisterRemoteObject(string ip, string port, string url)
+        public async Task<bool> RegisterRemoteObject(string ip, string port)
         {
             //判断是否存在
             if (ContainsKey(ip))
-                return false;
+                return true;
 
             bool result = false;
 
@@ -51,10 +57,10 @@ namespace SHH.OPCProxy.Comm.API
                 try
                 {
                     //尝试添加API
-                    if (TryAdd(ip, (SHHOPCItemAPI)Activator.GetObject(typeof(SHHOPCItemAPI), url)))
+                    if (TryAdd(ip, (SHHOPCItemAPI)Activator.GetObject(typeof(SHHOPCItemAPI), string.Format("tcp://{0}:{1}/SHHOPCItemAPI", ip, port))))
                     {
                         //掉线监测
-                        SHHOPCItemAPIChecker checker = new SHHOPCItemAPIChecker(this[ip], ip, this);
+                        SHHOPCItemAPIChecker checker = new SHHOPCItemAPIChecker(ip, port, this);
 
                         //如果已经存在
                         if (SHHOPCItemAPICheckers.ContainsKey(ip))
@@ -67,6 +73,7 @@ namespace SHH.OPCProxy.Comm.API
 
                         //添加到SHHOPCItemAPICheckers
                         SHHOPCItemAPICheckers.TryAdd(ip, checker);
+                        result = true;
                     }
                     else
                     {
@@ -97,7 +104,7 @@ namespace SHH.OPCProxy.Comm.API
         {
             await Task.Run(() =>
             {
-                TryRemove(ip,out var _);
+                TryRemove(ip, out var _);
             });
         }
 
@@ -119,33 +126,39 @@ namespace SHH.OPCProxy.Comm.API
         /// <returns></returns>
         public async Task<bool> RegisterOPCItem(SHHOPCItemAPIModel model)
         {
-            bool result = false;
+            //先尝试注册远程对象
+            bool result = await RegisterRemoteObject(model.IP, model.Port);
+
+            //注册失败直接返回
+            if (!result)
+                return false;
 
             await Task.Run(() =>
             {
                 try
                 {
                     //注册OPC项
-                    if (result = this[model.IP].RegisterOPCItem(model))
-                    {
-                        //添加到APIModels
+                    result = this[model.IP].RegisterOPCItem(model);
+
+                    //添加到APIModels
+                    if (!Models.ContainsKey(model.GetOPCItemHashCode()))
                         Models.TryAdd(model.GetOPCItemHashCode(), model);
 
-                        //添加读取值的定时器
-                        if (!ReadValueTimers.ContainsKey(model.GetOPCServerHashCode()))
-                        {
-                            //实例化定时器
-                            Timer timer = new Timer(new TimerCallback(ReadItemValuesCallBack), model.GetOPCServerHashCode(), Timeout.Infinite, Timeout.Infinite);
-                            if (ReadValueTimers.TryAdd(model.GetOPCServerHashCode(), timer))
-                                //启动
-                                timer.Change(0, Timeout.Infinite);
-                        }
+
+                    //添加读取值的定时器
+                    if (!ReadValueTimers.ContainsKey(model.GetOPCServerHashCode()))
+                    {
+                        //实例化定时器
+                        Timer timer = new Timer(new TimerCallback(ReadItemValuesCallBack), model.GetOPCServerHashCode(), Timeout.Infinite, Timeout.Infinite);
+                        if (ReadValueTimers.TryAdd(model.GetOPCServerHashCode(), timer))
+                            //启动
+                            timer.Change(0, Timeout.Infinite);
                     }
                 }
                 catch (Exception e)
                 {
 #if DEBUG
-                    Debugger.Break();
+                    //Debugger.Break();
 #endif
                     SHHLog.WriteLog(e);
 
@@ -157,7 +170,7 @@ namespace SHH.OPCProxy.Comm.API
         }
 
         /// <summary>
-        /// 获取值的定时器
+        /// 获取值的回调函数
         /// </summary>
         /// <param name="state"></param>
         private void ReadItemValuesCallBack(object state)
@@ -191,6 +204,10 @@ namespace SHH.OPCProxy.Comm.API
                         model.State = SHHOPCServerState.Offline;
                         model.RealValue = "-";
 
+                        //尝试重新附加
+                        this[model.IP].UnRegisterOPCItem(model.GetHashCode());
+                        this[model.IP].RegisterOPCItem(model);
+
                         return;
                     }
                     else
@@ -207,7 +224,7 @@ namespace SHH.OPCProxy.Comm.API
                         else
                         {
                             //状态未知
-                            model.State = SHHOPCServerState.UnKnown;
+                            model.State = SHHOPCServerState.Offline;
                             model.RealValue = "-";
 
 
@@ -220,10 +237,10 @@ namespace SHH.OPCProxy.Comm.API
                 }
                 catch
                 {
-
+                    //远程对象异常
+                    model.State = SHHOPCServerState.CommFail;
+                    model.RealValue = "-";
                 }
-
-
             });
 
 
