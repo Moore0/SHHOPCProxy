@@ -53,16 +53,16 @@ namespace SHH.OPCProxy.Comm.API
                     //尝试添加API
                     if (TryAdd(ip, (SHHOPCItemAPI)Activator.GetObject(typeof(SHHOPCItemAPI), url)))
                     {
-                        //关联掉线监测
-                        SHHOPCItemAPIChecker checker = new SHHOPCItemAPIChecker(this[ip], this);
+                        //掉线监测
+                        SHHOPCItemAPIChecker checker = new SHHOPCItemAPIChecker(this[ip], ip, this);
 
                         //如果已经存在
                         if (SHHOPCItemAPICheckers.ContainsKey(ip))
                         {
                             //移除定时器
-                            SHHOPCItemAPICheckers.TryRemove(ip, out var a);
+                            SHHOPCItemAPICheckers.TryRemove(ip, out var ck);
                             //释放定时器
-                            a?.Timer?.Dispose();
+                            ck?.Timer?.Dispose();
                         }
 
                         //添加到SHHOPCItemAPICheckers
@@ -85,6 +85,22 @@ namespace SHH.OPCProxy.Comm.API
 
             return result;
         }
+
+
+
+        /// <summary>
+        /// 卸载远程对象
+        /// </summary>
+        /// <param name="api"></param>
+        /// <returns></returns>
+        public async Task UnRegisterRemoteObject(string ip)
+        {
+            await Task.Run(() =>
+            {
+                TryRemove(ip,out var _);
+            });
+        }
+
 
         /// <summary>
         /// 注册OPC项集合(无返回结果)
@@ -110,7 +126,7 @@ namespace SHH.OPCProxy.Comm.API
                 try
                 {
                     //注册OPC项
-                    if(result = this[model.IP].RegisterOPCItem(model))
+                    if (result = this[model.IP].RegisterOPCItem(model))
                     {
                         //添加到APIModels
                         Models.TryAdd(model.GetOPCItemHashCode(), model);
@@ -119,7 +135,7 @@ namespace SHH.OPCProxy.Comm.API
                         if (!ReadValueTimers.ContainsKey(model.GetOPCServerHashCode()))
                         {
                             //实例化定时器
-                            Timer timer = new Timer(new TimerCallback(ReadItemValuesCallBack),model.GetOPCServerHashCode(), Timeout.Infinite, Timeout.Infinite);
+                            Timer timer = new Timer(new TimerCallback(ReadItemValuesCallBack), model.GetOPCServerHashCode(), Timeout.Infinite, Timeout.Infinite);
                             if (ReadValueTimers.TryAdd(model.GetOPCServerHashCode(), timer))
                                 //启动
                                 timer.Change(0, Timeout.Infinite);
@@ -164,37 +180,50 @@ namespace SHH.OPCProxy.Comm.API
                 //更新时间
                 model.Time = DateTime.Now;
 
-                //如果服务处于未激活状态
-                if (!this[model.IP].IsOPCServerAlive(serverHashCode))
-                {
-                    //状态置为掉线
-                    model.State = SHHOPCServerState.Offline;
-                    model.RealValue = "-";
 
-                    return;
-                }
-                else
+                //如果远程对象意外断开,调用接口会抛出异常
+                try
                 {
-                    //获取实时值
-                    SHHOPCRealValue v = GetValue(model).Result;
-                    //当值不为空
-                    if (v != null)
+                    //如果服务处于未激活状态
+                    if (!this[model.IP].IsOPCServerAlive(serverHashCode))
                     {
-                        //状态正常
-                        model.State = SHHOPCServerState.Normal;
-                        model.RealValue = v.Value;
+                        //状态置为掉线
+                        model.State = SHHOPCServerState.Offline;
+                        model.RealValue = "-";
+
+                        return;
                     }
                     else
                     {
-                        //状态未知
-                        model.State = SHHOPCServerState.UnKnown;
-                        model.RealValue = "-";
+                        //获取实时值
+                        SHHOPCRealValue v = GetValue(model).Result;
+                        //当值不为空
+                        if (v != null)
+                        {
+                            //状态正常
+                            model.State = SHHOPCServerState.Normal;
+                            model.RealValue = v.Value;
+                        }
+                        else
+                        {
+                            //状态未知
+                            model.State = SHHOPCServerState.UnKnown;
+                            model.RealValue = "-";
 
-                        //重新附加到服务
-                        //TryReAttach(model);
+
+                            //尝试重新附加
+                            this[model.IP].UnRegisterOPCItem(model.GetHashCode());
+                            this[model.IP].RegisterOPCItem(model);
+                        }
+
                     }
+                }
+                catch
+                {
 
                 }
+
+
             });
 
 
@@ -213,9 +242,6 @@ namespace SHH.OPCProxy.Comm.API
         /// <returns></returns>
         public async Task<SHHOPCRealValue> GetValue(SHHOPCItemAPIModel model)
         {
-            //if (ContainsKey(model.IP))
-            //    return null;
-
             SHHOPCRealValue value = null;
 
             await Task.Run(() =>
@@ -234,14 +260,33 @@ namespace SHH.OPCProxy.Comm.API
         /// <returns></returns>
         public async Task<bool> SetValue(SHHOPCItemAPIModel model, string value)
         {
-            //if (ContainsKey(model.IP))
-            //    return false;
-
-            bool result = false; ;
+            bool result = false;
 
             await Task.Run(() =>
             {
                 result = this[model.IP].SetValue(model.GetOPCItemHashCode(), value);
+            });
+
+            return result;
+        }
+
+        /// <summary>
+        /// 判断API的状态是否正常
+        /// </summary>
+        /// <param name="ip"></param>
+        /// <returns></returns>
+        public async Task<bool> IsAPINormal(string ip)
+        {
+            //如果不存在
+            if (!SHHOPCItemAPICheckers.ContainsKey(ip))
+                return false;
+
+            bool result = false;
+
+            await Task.Run(() =>
+            {
+
+                result = SHHOPCItemAPICheckers[ip].IsNormal;
             });
 
             return result;

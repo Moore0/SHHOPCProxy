@@ -166,6 +166,11 @@ namespace SHH.OPCProxy.Comm.Model
         }
 
 
+        public override int GetHashCode()
+        {
+            return GetOPCItemHashCode();
+        }
+
         [field: NonSerialized()]
         public event PropertyChangedEventHandler PropertyChanged;
     }

@@ -37,12 +37,12 @@ namespace SHH.OPCProxy.Comm.Interface
         /// 卸载OPC项
         /// </summary>
         /// <param name="hashCode">项的hashCode</param>
-        void UnLoadOPCItem(int hashCode);
+        void UnRegisterOPCItem(int hashCode);
 
         /// <summary>
         /// 卸载所有项
         /// </summary>
-        void UnLoadAllOPCItems();
+        void UnRegisterAllOPCItems();
 
         /// <summary>
         /// OPC服务是否激活

@@ -85,16 +85,16 @@ namespace SHH.OPCProxy.Comm.API
         /// 卸载OPC项
         /// </summary>
         /// <param name="hashCode"></param>
-        public void UnLoadOPCItem(int hashCode)
+        public void UnRegisterOPCItem(int hashCode)
         {
-            OPCProxyPro.UnLoadOPCItem(hashCode);
+            OPCProxyPro.UnRegisterOPCItem(hashCode);
         }
         /// <summary>
         /// 卸载所有OPC项
         /// </summary>
-        public void UnLoadAllOPCItems()
+        public void UnRegisterAllOPCItems()
         {
-            OPCProxyPro.UnLoadAllOPCItems();
+            OPCProxyPro.UnRegisterAllOPCItems();
         }
 
         /// <summary>

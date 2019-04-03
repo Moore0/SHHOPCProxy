@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 namespace SHH.OPCProxy.Comm.APIChecker
 {
     /// <summary>
-    /// API状态监测
+    /// API状态监测(可改为泛型)
     /// </summary>
     public class SHHOPCItemAPIChecker : BaseAPIChecker
     {
@@ -23,6 +23,8 @@ namespace SHH.OPCProxy.Comm.APIChecker
         /// </summary>
         private SHHOPCItemAPICollection Parent { set; get; }
 
+        //private string IP { set; get; }
+
         /// <summary>
         /// 是否正常
         /// </summary>
@@ -32,29 +34,39 @@ namespace SHH.OPCProxy.Comm.APIChecker
         /// 构造函数
         /// </summary>
         /// <param name="api"></param>
-        public SHHOPCItemAPIChecker(BaseAPI api, SHHOPCItemAPICollection parent) 
+        public SHHOPCItemAPIChecker(SHHOPCItemAPI api, string ip, SHHOPCItemAPICollection parent)
             : base(api)
         {
             //获取API集合
             Parent = parent;
 
 
-            //Timer = new Timer(_ =>
-            //{
-            //    try
-            //    {
-            //        //测试是否API正常
-            //        api.GetHashCode();
-            //        IsNormal = true;
-            //    }
-            //    catch
-            //    {
-            //        IsNormal = false;
-            //    }
 
-            //    //固定两秒
-            //    Timer.Change(2000, Timeout.Infinite);
-            //}, null, 0, Timeout.Infinite);
+
+            Timer = new Timer(_ =>
+            {
+                try
+                {
+                    //测试是否API正常
+                    api.GetHashCode();
+                    IsNormal = true;
+                }
+                catch
+                {
+                    IsNormal = false;
+
+                    new Thread(async () =>
+                    {
+                        await parent.UnRegisterRemoteObject(ip);
+
+                        await parent.RegisterRemoteObject("127.0.0.1", "79", "tcp://127.0.0.1:79/SHHOPCItemAPI");
+                    }).Join();
+
+                }
+
+                //固定两秒
+                Timer.Change(2000, Timeout.Infinite);
+            }, null, 0, Timeout.Infinite);
         }
     }
 }

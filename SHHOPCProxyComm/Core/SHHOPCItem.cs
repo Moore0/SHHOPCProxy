@@ -85,6 +85,7 @@ namespace SHH.OPCProxy.Comm.Core
                 v = new SHHOPCRealValue()
                 {
                     Value = value?.ToString(),
+                    //弃用
                     Quality = (SHHOPCQualityStatus)Enum.Parse(typeof(SHHOPCQualityStatus), quality?.ToString()),
                     Time = Convert.ToDateTime(timeStamp.ToString()).ToLocalTime()
                 };
@@ -140,7 +141,7 @@ namespace SHH.OPCProxy.Comm.Core
         /// </summary>
         public int ServerID
         {
-            get => IP.GetHashCode() ^ ServerName.GetHashCode();
+            get => APIModel.GetOPCServerHashCode();
         }
 
         /// <summary>
@@ -149,7 +150,7 @@ namespace SHH.OPCProxy.Comm.Core
         /// <returns></returns>
         public override int GetHashCode()
         {
-            return ServerID ^ Name.GetHashCode();
+            return APIModel.GetOPCItemHashCode();
         }
     }
 }

@@ -271,17 +271,21 @@ namespace SHH.OPCProxy.Pro
         /// 卸载OPC项
         /// </summary>
         /// <param name="serverID"></param>
-        public void UnLoadOPCItem(int hashCode)
+        public void UnRegisterOPCItem(int hashCode)
         {
+            //如果不存在
+            if (!SHHOPCItems.ContainsKey(hashCode))
+                return;
 
+            SHHOPCItems.TryRemove(hashCode,out SHHOPCItem item);
         }
 
         /// <summary>
         /// 卸载所有项
         /// </summary>
-        public void UnLoadAllOPCItems()
+        public void UnRegisterAllOPCItems()
         {
-
+            SHHOPCItems.Clear();
         }
 
         /// <summary>

@@ -21,6 +21,7 @@ namespace SHH.OPCProxy.Comm.Model
         /// <summary>
         /// 质量
         /// </summary>
+        [Obsolete("弃用")]
         public SHHOPCQualityStatus Quality { set; get; } = SHHOPCQualityStatus.OPCQualityBad;
         /// <summary>
         /// 时间
