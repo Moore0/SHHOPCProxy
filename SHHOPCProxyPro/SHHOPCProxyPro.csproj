@@ -7,7 +7,7 @@
     <ProjectGuid>{7720373C-0AE9-4163-8318-2068711CD61A}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <RootNamespace>SHH.OPCProxy.Pro</RootNamespace>
-    <AssemblyName>SHHOPCProxyPro</AssemblyName>
+    <AssemblyName>ASHHOPCProxyPro</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>

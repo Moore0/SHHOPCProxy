@@ -8,7 +8,7 @@
     <ProjectGuid>{A4030FB2-AB02-4738-BBA3-50659D3CA335}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>SHHOPCProxyTest</RootNamespace>
+    <RootNamespace>SHH.OPCProxy.Test</RootNamespace>
     <AssemblyName>SHHOPCProxyTest</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
@@ -67,6 +67,8 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="SHHOPCProxyClient\MainWindowViewModel_Test.cs" />
+    <Compile Include="SHHOPCProxyComm\SHHOPCItemAPICollection_Test.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -85,10 +87,13 @@
       <Project>{7720373c-0ae9-4163-8318-2068711cd61a}</Project>
       <Name>SHHOPCProxyPro</Name>
     </ProjectReference>
-    <ProjectReference Include="..\SHHOPCProxy\SHHOPCProxyClient.csproj">
+    <ProjectReference Include="..\SHHOPCProxyClient\SHHOPCProxyClient.csproj">
       <Project>{5318cd02-18f7-421b-8878-521d5d45481a}</Project>
       <Name>SHHOPCProxyClient</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="SHHOPCProxyPro\" />
   </ItemGroup>
   <Import Project="$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets" Condition="Exists('$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets')" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

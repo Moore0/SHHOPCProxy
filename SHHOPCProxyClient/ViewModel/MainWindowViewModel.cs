@@ -44,14 +44,14 @@ namespace SHH.OPCProxy.Client.ViewModel
             TestModels.Add(new SHHOPCItemAPIModel { IP = _IP, Port = _Port, ServerName = _ServerName, Name = "Channel_0.Device_0.Tag_7" });
             TestModels.Add(new SHHOPCItemAPIModel { IP = _IP, Port = _Port, ServerName = _ServerName, Name = "Channel_0.Device_0.Tag_8" });
 
-            await SHHOPCItemAPICollection.RegisterOPCItems(TestModels);
+            await SHHOPCItemAPICollection.RegisterOPCItem(TestModels);
         }
 
         public ObservableCollection<SHHOPCItemAPIModel> TestModels { set; get; } = new ObservableCollection<SHHOPCItemAPIModel>();
 
 
         public string _Port = "79";
-        public string _IP { set; get; } = "127.0.0.1";
+        public string _IP { set; get; } = "172.16.19.16";
         public string _ServerName { set; get; } = "KEPware.KEPServerEx.V4";
     }
 }

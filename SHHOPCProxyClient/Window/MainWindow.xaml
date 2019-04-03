@@ -7,7 +7,7 @@
         xmlns:ViewModel="clr-namespace:SHH.OPCProxy.Client.ViewModel"
         xmlns:Win="clr-namespace:SHH.OPCProxy.Client.Window"
         mc:Ignorable="d"
-        Title="测试客户端" Height="450" Width="800">
+        Title="测试客户端" Height="450" Width="1000">
     <Grid>
         <ListView ItemsSource="{Binding TestModels}">
             <ListView.View>
@@ -18,6 +18,7 @@
                     <GridViewColumn Header="更新时间" Width="200" DisplayMemberBinding="{Binding Time}"/>
                 </GridView>
             </ListView.View>
+
         </ListView>
     </Grid>
 </Win:WindowBase>

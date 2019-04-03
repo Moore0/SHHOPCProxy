@@ -46,6 +46,9 @@ namespace SHH.OPCProxy.Comm.API
         /// <returns></returns>
         public async Task<bool> RegisterRemoteObject(string ip, string port)
         {
+            //判断输入参数
+            //throw new ArgumentException("");
+
             //判断是否存在
             if (ContainsKey(ip))
                 return true;
@@ -112,7 +115,7 @@ namespace SHH.OPCProxy.Comm.API
         /// <summary>
         /// 注册OPC项集合(无返回结果)
         /// </summary>
-        public async Task RegisterOPCItems(IEnumerable<SHHOPCItemAPIModel> model)
+        public async Task RegisterOPCItem(IEnumerable<SHHOPCItemAPIModel> model)
         {
             for (int i = 0; i < model.Count(); ++i)
             {

@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.28705.295
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SHHOPCProxyClient", "SHHOPCProxy\SHHOPCProxyClient.csproj", "{5318CD02-18F7-421B-8878-521D5D45481A}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SHHOPCProxyClient", "SHHOPCProxyClient\SHHOPCProxyClient.csproj", "{5318CD02-18F7-421B-8878-521D5D45481A}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SHHOPCProxyComm", "SHHOPCProxyComm\SHHOPCProxyComm.csproj", "{F2D2980D-7D9D-4618-BCC7-9644049D6E08}"
 EndProject
