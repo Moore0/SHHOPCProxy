@@ -103,30 +103,28 @@ namespace SHH.OPCProxy.Comm.API
         /// <returns></returns>
         public async Task<bool> RegisterOPCItem(SHHOPCItemAPIModel model)
         {
-            //if (ContainsKey(model.IP))
-            //    return false;
-
             bool result = false;
 
             await Task.Run(() =>
             {
                 try
                 {
-                    this[model.IP].RegisterOPCItem(model);
-                    result = true;
-                    Models.TryAdd(model.GetOPCItemHashCode(), model);
-
-
-                    //添加读取值的定时器
-                    if (!ReadValueTimers.ContainsKey(model.GetOPCServerHashCode()))
+                    //注册OPC项
+                    if(result = this[model.IP].RegisterOPCItem(model))
                     {
-                        Timer timer = new Timer(new TimerCallback(ReadItemValuesCallBack),
-                            model.GetOPCServerHashCode(), Timeout.Infinite, Timeout.Infinite);
-                        if (ReadValueTimers.TryAdd(model.GetOPCServerHashCode(), timer))
-                            //启动
-                            timer.Change(0, Timeout.Infinite);
-                    }
+                        //添加到APIModels
+                        Models.TryAdd(model.GetOPCItemHashCode(), model);
 
+                        //添加读取值的定时器
+                        if (!ReadValueTimers.ContainsKey(model.GetOPCServerHashCode()))
+                        {
+                            //实例化定时器
+                            Timer timer = new Timer(new TimerCallback(ReadItemValuesCallBack),model.GetOPCServerHashCode(), Timeout.Infinite, Timeout.Infinite);
+                            if (ReadValueTimers.TryAdd(model.GetOPCServerHashCode(), timer))
+                                //启动
+                                timer.Change(0, Timeout.Infinite);
+                        }
+                    }
                 }
                 catch (Exception e)
                 {
@@ -142,13 +140,20 @@ namespace SHH.OPCProxy.Comm.API
             return result;
         }
 
+        /// <summary>
+        /// 获取值的定时器
+        /// </summary>
+        /// <param name="state"></param>
         private void ReadItemValuesCallBack(object state)
         {
+#if DEBUG
+            //计算处理时间
+            DateTime time = DateTime.Now;
+#endif
+            //获取serverHashCode
             int serverHashCode = (int)state;
 
-
-
-            for (int i = 0; i < Models.Count; ++i)
+            Parallel.For(0, Models.Count, (i) =>
             {
                 var model = Models.Values.ElementAt(i);
 
@@ -156,37 +161,49 @@ namespace SHH.OPCProxy.Comm.API
                 if (model.GetOPCServerHashCode() != serverHashCode)
                     return;
 
+                //更新时间
+                model.Time = DateTime.Now;
 
-                //补充接口
-                ////当连接池中存在该连接且连接状态为正常
-                //if (SHHOPCItemAPI.OPCServerPool.ContainsKey(model.GetOPCServerHashCode())
-                //    && !SHHOPCItemAPI.OPCServerPool[model.GetOPCServerHashCode()].IsConn)
-
-
-                //获取实时值
-                SHHOPCRealValue v = GetValue(model).Result;
-
-                //当值不为空
-                if (v != null)
+                //如果服务处于未激活状态
+                if (!this[model.IP].IsOPCServerAlive(serverHashCode))
                 {
-                    //获取实时值
-                    model.RealValue = v.Value;
-                    model.Quality = v.Quality;
-                    model.Time = v.Time;
-                    //状态正常
-                    model.State = SHHOPCServerState.Normal;
+                    //状态置为掉线
+                    model.State = SHHOPCServerState.Offline;
+                    model.RealValue = "-";
+
+                    return;
                 }
                 else
                 {
-                    //状态未知
-                    model.State = SHHOPCServerState.UnKnown;
-                    //重新附加到服务
-                    //TryReAttach(model);
+                    //获取实时值
+                    SHHOPCRealValue v = GetValue(model).Result;
+                    //当值不为空
+                    if (v != null)
+                    {
+                        //状态正常
+                        model.State = SHHOPCServerState.Normal;
+                        model.RealValue = v.Value;
+                    }
+                    else
+                    {
+                        //状态未知
+                        model.State = SHHOPCServerState.UnKnown;
+                        model.RealValue = "-";
+
+                        //重新附加到服务
+                        //TryReAttach(model);
+                    }
+
                 }
-            }
+            });
 
 
-            ReadValueTimers[serverHashCode].Change(2000, Timeout.Infinite);
+#if DEBUG
+            //打印处理时间
+            Console.WriteLine(string.Format("OPC项处理时间: {0}", DateTime.Now - time));
+#endif
+
+            ReadValueTimers[serverHashCode].Change(0, Timeout.Infinite);
         }
 
 

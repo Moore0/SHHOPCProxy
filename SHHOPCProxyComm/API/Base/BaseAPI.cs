@@ -30,10 +30,5 @@ namespace SHH.OPCProxy.Comm.API
         {
             return null;
         }
-
-        /// <summary>
-        /// 是否关闭
-        /// </summary>
-        public abstract bool IsClosed { set; get; }
     }
 }

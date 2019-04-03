@@ -33,7 +33,6 @@ namespace SHH.OPCProxy.Client.ViewModel
 
         public async void OnLoad()
         {
-
             await SHHOPCItemAPICollection.RegisterRemoteObject("127.0.0.1", "79", "tcp://127.0.0.1:79/SHHOPCItemAPI");
 
 
@@ -44,6 +43,10 @@ namespace SHH.OPCProxy.Client.ViewModel
             TestModels.Add(new SHHOPCItemAPIModel { IP = _IP, ServerName = _ServerName, Name = "Channel_10.Device_0.Tag_2" });
             TestModels.Add(new SHHOPCItemAPIModel { IP = _IP, ServerName = _ServerName, Name = "Channel_10.Device_0.Tag_3" });
             TestModels.Add(new SHHOPCItemAPIModel { IP = _IP, ServerName = _ServerName, Name = "Channel_10.Device_0.Tag_4" });
+            TestModels.Add(new SHHOPCItemAPIModel { IP = _IP, ServerName = _ServerName, Name = "Channel_10.Device_0.Tag_5" });
+            TestModels.Add(new SHHOPCItemAPIModel { IP = _IP, ServerName = _ServerName, Name = "Channel_10.Device_0.Tag_6" });
+            TestModels.Add(new SHHOPCItemAPIModel { IP = _IP, ServerName = _ServerName, Name = "Channel_10.Device_0.Tag_7" });
+            TestModels.Add(new SHHOPCItemAPIModel { IP = _IP, ServerName = _ServerName, Name = "Channel_10.Device_0.Tag_8" });
 
             await SHHOPCItemAPICollection.RegisterOPCItems(TestModels);
         }

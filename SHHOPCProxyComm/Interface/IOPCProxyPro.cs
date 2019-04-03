@@ -34,7 +34,7 @@ namespace SHH.OPCProxy.Comm.Interface
         bool RegisterOPCItem(SHHOPCItemAPIModel model);
 
         /// <summary>
-        /// 卸载OPC服务的所有项
+        /// 卸载OPC项
         /// </summary>
         /// <param name="hashCode">项的hashCode</param>
         void UnLoadOPCItem(int hashCode);
@@ -43,5 +43,11 @@ namespace SHH.OPCProxy.Comm.Interface
         /// 卸载所有项
         /// </summary>
         void UnLoadAllOPCItems();
+
+        /// <summary>
+        /// OPC服务是否激活
+        /// </summary>
+        /// <returns></returns>
+        bool IsOPCServerAlive(int serverHashCode);
     }
 }

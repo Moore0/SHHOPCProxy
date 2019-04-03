@@ -12,6 +12,7 @@ using SHH.OPCProxy.Comm.Core;
 using SHH.OPCProxy.Comm.Model;
 using SHH.OPCProxy.Comm.DAL;
 using SHH.OPCProxy.Comm.Interface;
+using System.Diagnostics;
 
 namespace SHH.OPCProxy.Comm.API
 {
@@ -20,15 +21,29 @@ namespace SHH.OPCProxy.Comm.API
     /// </summary>
     public class SHHOPCItemAPI : BaseAPI, IOPCProxyPro
     {
+        private IOPCProxyPro _OPCProxyPro;
+
         /// <summary>
         /// 服务端引用
         /// </summary>
-        public IOPCProxyPro OPCProxyPro { set; get; }
+        public IOPCProxyPro OPCProxyPro
+        {
+            set => _OPCProxyPro = value;
+            get
+            {
+                if (_OPCProxyPro == null)
+                {
+#if DEBUG
+                    Debugger.Break();
+#endif
+                    throw new InvalidOperationException("IOPCProxyPro未初始化");
+                }
 
-        /// <summary>
-        /// 是否关闭
-        /// </summary>
-        public override bool IsClosed { get; set; }
+                return _OPCProxyPro;
+            }
+        }
+
+
 
         /// <summary>
         /// 构造函数
@@ -72,14 +87,24 @@ namespace SHH.OPCProxy.Comm.API
         /// <param name="hashCode"></param>
         public void UnLoadOPCItem(int hashCode)
         {
-
+            OPCProxyPro.UnLoadOPCItem(hashCode);
         }
         /// <summary>
         /// 卸载所有OPC项
         /// </summary>
         public void UnLoadAllOPCItems()
         {
+            OPCProxyPro.UnLoadAllOPCItems();
+        }
 
+        /// <summary>
+        /// 判断服务是否激活
+        /// </summary>
+        /// <param name="hashCode"></param>
+        /// <returns></returns>
+        public bool IsOPCServerAlive(int serverHashCode)
+        {
+            return OPCProxyPro.IsOPCServerAlive(serverHashCode);
         }
     }
 }

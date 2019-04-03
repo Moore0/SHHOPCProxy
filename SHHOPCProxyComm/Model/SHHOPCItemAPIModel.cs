@@ -28,21 +28,6 @@ namespace SHH.OPCProxy.Comm.Model
             get => name;
         }
 
-
-        private SHHOPCQualityStatus quality = SHHOPCQualityStatus.OPCQualityBad;
-        /// <summary>
-        /// 质量
-        /// </summary>
-        public SHHOPCQualityStatus Quality
-        {
-            set
-            {
-                quality = value;
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Quality)));
-            }
-            get => quality;
-        }
-
         private DateTime time;
         /// <summary>
         /// 更新时间

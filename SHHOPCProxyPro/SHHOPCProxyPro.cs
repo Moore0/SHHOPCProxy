@@ -235,13 +235,11 @@ namespace SHH.OPCProxy.Pro
         /// <param name="model"></param>
         public bool RegisterOPCItem(SHHOPCItemAPIModel model)
         {
-            //如果存在
+            //如果已存在
             if (SHHOPCItems.ContainsKey(model.GetOPCItemHashCode()))
                 return false;
 
-
             bool result = false;
-
 
             try
             {
@@ -284,6 +282,18 @@ namespace SHH.OPCProxy.Pro
         public void UnLoadAllOPCItems()
         {
 
+        }
+
+        /// <summary>
+        /// 判断OPC服务是否激活
+        /// </summary>
+        /// <param name="hashCode"></param>
+        /// <returns></returns>
+        public bool IsOPCServerAlive(int hashCode)
+        {
+            if (!OPCServerPool.ContainsKey(hashCode))
+                return false;
+            return OPCServerPool[hashCode].IsConn;
         }
     }
 }

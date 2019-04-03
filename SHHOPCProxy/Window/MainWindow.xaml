@@ -14,7 +14,7 @@
                 <GridView>
                     <GridViewColumn Header="名称(OPC地址)" Width="200" DisplayMemberBinding="{Binding Name}"/>
                     <GridViewColumn Header="值" Width="200" DisplayMemberBinding="{Binding RealValue}"/>
-                    <GridViewColumn Header="质量" Width="200" DisplayMemberBinding="{Binding Quality}"/>
+                    <GridViewColumn Header="状态" Width="200" DisplayMemberBinding="{Binding State}"/>
                     <GridViewColumn Header="更新时间" Width="200" DisplayMemberBinding="{Binding Time}"/>
                 </GridView>
             </ListView.View>
